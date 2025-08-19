@@ -76,30 +76,30 @@ export default function CompanyDetail() {
   return <div className="max-w-7xl mx-auto">
       {/* Back button and header */}
       <div className="mb-6">
-        <Link to="/dashboard" className="flex items-center text-gray-400 hover:text-white mb-4">
+        <Link to="/dashboard" className="flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-4">
           <ArrowLeftIcon size={16} className="mr-1" />
           Back to Dashboard
         </Link>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center">
-              <h1 className="text-2xl md:text-3xl font-bold text-white mr-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mr-2">
                 {company.name}
               </h1>
-              <span className="bg-gray-700 px-2 py-1 rounded text-sm">
+              <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-sm text-gray-700 dark:text-gray-300">
                 {company.ticker}
               </span>
             </div>
-            <p className="text-gray-400 mt-1">
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               {company.sector} • Last updated: {new Date().toLocaleDateString()}
             </p>
           </div>
           <div className="flex space-x-3 mt-4 md:mt-0">
-            <button className="px-3 py-1 rounded-md border border-gray-700 text-gray-300 hover:bg-gray-700 flex items-center">
+            <button className="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
               <BookmarkIcon size={16} className="mr-2" />
               Watchlist
             </button>
-            <button className="px-3 py-1 rounded-md border border-gray-700 text-gray-300 hover:bg-gray-700 flex items-center">
+            <button className="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
               <BellIcon size={16} className="mr-2" />
               Set Alert
             </button>
@@ -107,10 +107,10 @@ export default function CompanyDetail() {
         </div>
       </div>
       {/* Credit score card */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex flex-col justify-center items-center md:items-start">
-            <div className="text-gray-400 mb-1">Current Credit Score</div>
+            <div className="text-gray-600 dark:text-gray-400 mb-1">Current Credit Score</div>
             <div className="flex items-center">
               <span className="text-4xl font-bold text-green-500">
                 {company.currentScore}
@@ -122,46 +122,46 @@ export default function CompanyDetail() {
                 </span>
               </div>
             </div>
-            <div className="text-sm text-gray-400 mt-1">
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               Agency Rating:{' '}
-              <span className="text-white">{company.agencyRating}</span>
+              <span className="text-gray-900 dark:text-white">{company.agencyRating}</span>
             </div>
           </div>
           <div className="md:col-span-2">
-            <p className="text-gray-300">{company.description}</p>
+            <p className="text-gray-700 dark:text-gray-300">{company.description}</p>
             <div className="mt-4 flex space-x-4">
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                <span className="text-sm text-gray-400">Low Risk</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Low Risk</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                <span className="text-sm text-gray-400">Medium Risk</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Medium Risk</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                <span className="text-sm text-gray-400">High Risk</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">High Risk</span>
               </div>
             </div>
           </div>
         </div>
       </div>
       {/* Tabs */}
-      <div className="border-b border-gray-700 mb-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex space-x-6 overflow-x-auto">
-          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'overview' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-400 hover:text-white'}`} onClick={() => setActiveTab('overview')}>
+          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'overview' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setActiveTab('overview')}>
             <BarChart2Icon size={16} className="mr-2" />
             Overview
           </button>
-          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'explanations' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-400 hover:text-white'}`} onClick={() => setActiveTab('explanations')}>
+          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'explanations' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setActiveTab('explanations')}>
             <FileTextIcon size={16} className="mr-2" />
             Explanations
           </button>
-          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'events' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-400 hover:text-white'}`} onClick={() => setActiveTab('events')}>
+          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'events' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setActiveTab('events')}>
             <NewspaperIcon size={16} className="mr-2" />
             Events
           </button>
-          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'history' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-400 hover:text-white'}`} onClick={() => setActiveTab('history')}>
+          <button className={`py-3 px-1 flex items-center text-sm font-medium border-b-2 ${activeTab === 'history' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setActiveTab('history')}>
             <HistoryIcon size={16} className="mr-2" />
             History
           </button>
@@ -171,7 +171,7 @@ export default function CompanyDetail() {
       <div>
         {/* Overview Tab */}
         {activeTab === 'overview' && <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium mb-4">Score Components</h3>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -194,19 +194,19 @@ export default function CompanyDetail() {
                   </div>)}
               </div>
             </div>
-            <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-medium mb-4">
                 Key Financial Metrics
               </h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       Debt to Equity
                     </span>
                     <span className="text-sm">0.38</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div className="bg-blue-500 h-2 rounded-full" style={{
                   width: '38%'
                 }}></div>
@@ -214,10 +214,10 @@ export default function CompanyDetail() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-400">Current Ratio</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Current Ratio</span>
                     <span className="text-sm">1.56</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div className="bg-green-500 h-2 rounded-full" style={{
                   width: '75%'
                 }}></div>
@@ -225,12 +225,12 @@ export default function CompanyDetail() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       Return on Equity
                     </span>
                     <span className="text-sm">22.9%</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div className="bg-purple-500 h-2 rounded-full" style={{
                   width: '85%'
                 }}></div>
@@ -238,10 +238,10 @@ export default function CompanyDetail() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-400">Profit Margin</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Profit Margin</span>
                     <span className="text-sm">15.3%</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div className="bg-yellow-500 h-2 rounded-full" style={{
                   width: '65%'
                 }}></div>
@@ -249,12 +249,12 @@ export default function CompanyDetail() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       Interest Coverage
                     </span>
                     <span className="text-sm">12.4x</span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div className="bg-pink-500 h-2 rounded-full" style={{
                   width: '90%'
                 }}></div>
@@ -262,19 +262,19 @@ export default function CompanyDetail() {
                 </div>
               </div>
               <div className="mt-6">
-                <button className="w-full py-2 text-sm text-blue-400 border border-blue-400 rounded-md hover:bg-blue-500 hover:bg-opacity-10 transition-colors">
+                <button className="w-full py-2 text-sm text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors">
                   View Full Financial Report
                 </button>
               </div>
             </div>
           </div>}
         {/* Explanations Tab */}
-        {activeTab === 'explanations' && <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        {activeTab === 'explanations' && <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-medium mb-4">
               Credit Score Explanations
             </h3>
             <div className="space-y-6">
-              {company.features.map((feature, index) => <div key={feature.name} className="border-b border-gray-700 pb-4 last:border-0">
+              {company.features.map((feature, index) => <div key={feature.name} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
                       <div className="w-4 h-4 rounded-full mr-2" style={{
@@ -284,10 +284,10 @@ export default function CompanyDetail() {
                     </div>
                     <div className="flex items-center">
                       <span className="font-medium">{feature.value}%</span>
-                      <ChevronDownIcon size={16} className="ml-1 text-gray-400" />
+                      <ChevronDownIcon size={16} className="ml-1 text-gray-500 dark:text-gray-400" />
                     </div>
                   </div>
-                  <p className="text-sm text-gray-300">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
                     {index === 0 && 'The company maintains strong cash reserves relative to short-term obligations, indicating good ability to meet immediate financial commitments.'}
                     {index === 1 && 'Current debt levels are manageable with steady cash flows providing adequate coverage for interest payments and principal repayments.'}
                     {index === 2 && 'Consistent profit margins and return on capital demonstrate sustainable business operations and financial health.'}
@@ -298,26 +298,26 @@ export default function CompanyDetail() {
             </div>
           </div>}
         {/* Events Tab */}
-        {activeTab === 'events' && <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        {activeTab === 'events' && <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-medium mb-4">
               Recent Events Impacting Score
             </h3>
             <div className="space-y-6">
-              {company.events.map(event => <div key={event.id} className="border-b border-gray-700 pb-4 last:border-0">
+              {company.events.map(event => <div key={event.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0">
                   <div className="flex items-start">
                     <div className={`mt-1 h-4 w-4 rounded-full flex-shrink-0 ${event.impact === 'positive' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                     <div className="ml-3">
                       <div className="flex items-center">
                         <h4 className="font-medium">{event.title}</h4>
-                        <span className="ml-2 text-sm text-gray-400">
+                        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                           {event.date}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-300 mt-1">
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                         {event.description}
                       </p>
                       <div className="mt-2 flex items-center">
-                        <span className="text-sm text-gray-400 mr-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">
                           Score Impact:
                         </span>
                         {event.impact === 'positive' ? <div className="flex items-center text-green-500">
@@ -334,24 +334,24 @@ export default function CompanyDetail() {
             </div>
           </div>}
         {/* History Tab */}
-        {activeTab === 'history' && <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        {activeTab === 'history' && <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-medium mb-4">
               Historical Score Timeline
             </h3>
             <div className="relative">
               {/* Vertical timeline line */}
-              <div className="absolute h-full w-0.5 bg-gray-700 left-2.5 top-0"></div>
+              <div className="absolute h-full w-0.5 bg-gray-200 dark:bg-gray-700 left-2.5 top-0"></div>
               <div className="space-y-6">
                 <div className="relative pl-10">
                   <div className="absolute left-0 top-1 h-5 w-5 rounded-full bg-blue-500"></div>
                   <div>
                     <div className="flex items-center">
                       <h4 className="font-medium">Score: 82</h4>
-                      <span className="ml-2 text-sm text-gray-400">
+                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                         Dec 2023
                       </span>
                     </div>
-                    <p className="text-sm text-gray-300 mt-1">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                       Strong quarterly earnings and improved debt coverage
                       ratio.
                     </p>
@@ -362,11 +362,11 @@ export default function CompanyDetail() {
                   <div>
                     <div className="flex items-center">
                       <h4 className="font-medium">Score: 79</h4>
-                      <span className="ml-2 text-sm text-gray-400">
+                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                         Nov 2023
                       </span>
                     </div>
-                    <p className="text-sm text-gray-300 mt-1">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                       New factory announcement with positive long-term outlook.
                     </p>
                   </div>
@@ -376,11 +376,11 @@ export default function CompanyDetail() {
                   <div>
                     <div className="flex items-center">
                       <h4 className="font-medium">Score: 75</h4>
-                      <span className="ml-2 text-sm text-gray-400">
+                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                         Oct 2023
                       </span>
                     </div>
-                    <p className="text-sm text-gray-300 mt-1">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                       Supply chain disruptions affected production temporarily.
                     </p>
                   </div>
@@ -390,11 +390,11 @@ export default function CompanyDetail() {
                   <div>
                     <div className="flex items-center">
                       <h4 className="font-medium">Score: 76</h4>
-                      <span className="ml-2 text-sm text-gray-400">
+                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                         Sep 2023
                       </span>
                     </div>
-                    <p className="text-sm text-gray-300 mt-1">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                       Stable financial performance with slight improvements in
                       liquidity.
                     </p>
@@ -405,11 +405,11 @@ export default function CompanyDetail() {
                   <div>
                     <div className="flex items-center">
                       <h4 className="font-medium">Score: 73</h4>
-                      <span className="ml-2 text-sm text-gray-400">
+                      <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                         Aug 2023
                       </span>
                     </div>
-                    <p className="text-sm text-gray-300 mt-1">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                       New strategic partnership announced, improving market
                       position.
                     </p>

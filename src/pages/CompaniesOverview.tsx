@@ -226,25 +226,25 @@ export default function CompaniesOverview() {
   });
   return <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white">Companies Overview</h1>
-        <p className="text-gray-400">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Companies Overview</h1>
+        <p className="text-gray-600 dark:text-gray-400">
           Browse and analyze companies in our database
         </p>
       </div>
       {/* Search and filters */}
-      <div className="bg-gray-800 rounded-xl border border-gray-700 p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6">
         <div className="flex flex-col md:flex-row md:items-center gap-4">
           {/* Search */}
           <div className="relative flex-grow">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <SearchIcon size={16} className="text-gray-400" />
             </div>
-            <input type="text" placeholder="Search companies, tickers, or descriptions..." className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <input type="text" placeholder="Search companies, tickers, or descriptions..." className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
           {/* Industry Filter */}
           <div className="flex-shrink-0">
             <div className="relative">
-              <select className="appearance-none pl-3 pr-10 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500" value={industryFilter} onChange={e => setIndustryFilter(e.target.value)}>
+              <select className="appearance-none pl-3 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" value={industryFilter} onChange={e => setIndustryFilter(e.target.value)}>
                 {industries.map(industry => <option key={industry} value={industry}>
                     {industry}
                   </option>)}
@@ -257,7 +257,7 @@ export default function CompaniesOverview() {
           {/* Sort By */}
           <div className="flex-shrink-0">
             <div className="relative">
-              <select className="appearance-none pl-3 pr-10 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+              <select className="appearance-none pl-3 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" value={sortBy} onChange={e => setSortBy(e.target.value)}>
                 <option value="score">Credit Score</option>
                 <option value="name">Company Name</option>
                 <option value="change">Score Change</option>
@@ -270,17 +270,17 @@ export default function CompaniesOverview() {
           </div>
           {/* Sort Order */}
           <div className="flex-shrink-0">
-            <button className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none hover:bg-gray-600" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+            <button className="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white focus:outline-none hover:bg-gray-50 dark:hover:bg-gray-600" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
               {sortOrder === 'desc' ? <TrendingDownIcon size={16} /> : <TrendingUpIcon size={16} />}
             </button>
           </div>
           {/* View Toggle */}
           <div className="flex-shrink-0">
-            <div className="flex border border-gray-600 rounded-md overflow-hidden">
-              <button className={`px-3 py-2 ${viewMode === 'grid' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`} onClick={() => setViewMode('grid')}>
+            <div className="flex border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+              <button className={`px-3 py-2 ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'}`} onClick={() => setViewMode('grid')}>
                 <GridIcon size={16} />
               </button>
-              <button className={`px-3 py-2 ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`} onClick={() => setViewMode('list')}>
+              <button className={`px-3 py-2 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'}`} onClick={() => setViewMode('list')}>
                 <ListIcon size={16} />
               </button>
             </div>
@@ -288,7 +288,7 @@ export default function CompaniesOverview() {
         </div>
       </div>
       {/* Results count */}
-      <div className="mb-4 text-sm text-gray-400">
+      <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
         Showing {sortedCompanies.length}{' '}
         {sortedCompanies.length === 1 ? 'company' : 'companies'}
       </div>
@@ -298,30 +298,30 @@ export default function CompaniesOverview() {
         </div>}
       {/* List View */}
       {viewMode === 'list' && <div className="space-y-4">
-          {sortedCompanies.map(company => <div key={company.id} className="bg-gray-800 rounded-xl border border-gray-700 p-4 hover:border-blue-500 transition-colors">
+          {sortedCompanies.map(company => <div key={company.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:border-blue-500 transition-colors">
               <div className="flex items-start">
-                <div className="h-16 w-16 flex-shrink-0 bg-gray-700 rounded-md overflow-hidden">
-                  {company.logo ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center text-gray-400">
+                <div className="h-16 w-16 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
+                  {company.logo ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" /> : <div className="h-full w-full flex items-center justify-center text-gray-500 dark:text-gray-400">
                       {company.ticker.substring(0, 2)}
                     </div>}
                 </div>
                 <div className="ml-4 flex-grow">
                   <div className="flex justify-between">
                     <div>
-                      <h3 className="font-medium text-white flex items-center">
+                      <h3 className="font-medium text-gray-900 dark:text-white flex items-center">
                         {company.name}
-                        <span className="ml-2 px-2 py-0.5 bg-gray-700 rounded text-xs text-gray-300">
+                        <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs text-gray-700 dark:text-gray-300">
                           {company.ticker}
                         </span>
                       </h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         {company.industry}
                       </p>
                     </div>
                     <div className="flex items-center">
                       <div className="flex items-center mr-4">
                         {[...Array(5)].map((_, i) => <StarIcon key={i} size={14} className={i < Math.floor(company.rating) ? 'text-yellow-400' : i < company.rating ? 'text-yellow-400 opacity-50' : 'text-gray-500'} fill={i < Math.floor(company.rating) ? 'currentColor' : 'none'} />)}
-                        <span className="ml-1 text-sm text-gray-400">
+                        <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">
                           {company.rating}
                         </span>
                       </div>
@@ -332,12 +332,12 @@ export default function CompaniesOverview() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-300 mt-2 line-clamp-2">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 line-clamp-2">
                     {company.description}
                   </p>
                   <div className="flex justify-between items-center mt-3">
                     <div className="flex items-center">
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
                         Score Change:
                       </span>
                       <div className="ml-2 flex items-center">
@@ -347,7 +347,7 @@ export default function CompaniesOverview() {
                         </span>
                       </div>
                     </div>
-                    <Link to={`/company/${company.id}`} className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-md flex items-center">
+                    <Link to={`/company/${company.id}`} className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md flex items-center">
                       View Details
                       <ExternalLinkIcon size={14} className="ml-1" />
                     </Link>
@@ -357,14 +357,14 @@ export default function CompaniesOverview() {
             </div>)}
         </div>}
       {/* No results */}
-      {sortedCompanies.length === 0 && <div className="text-center py-12 bg-gray-800 rounded-xl border border-gray-700">
-          <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+      {sortedCompanies.length === 0 && <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
             <SearchIcon size={24} className="text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium mb-1 text-white">
+          <h3 className="text-lg font-medium mb-1 text-gray-900 dark:text-white">
             No companies found
           </h3>
-          <p className="text-gray-400">
+          <p className="text-gray-600 dark:text-gray-400">
             Try adjusting your search criteria or filters
           </p>
         </div>}

@@ -22,18 +22,18 @@ const newsItems = [{
 }];
 export default function NewsWidget() {
   return <div className="space-y-3">
-      {newsItems.map(item => <div key={item.id} className="flex items-start p-3 rounded-lg bg-gray-700 bg-opacity-50 hover:bg-opacity-70 transition-all cursor-pointer">
+      {newsItems.map(item => <div key={item.id} className="flex items-start p-3 rounded-lg bg-gray-50 border border-gray-200 dark:bg-gray-700 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-opacity-70 transition-all cursor-pointer">
           <div className="mr-3">
             <NewspaperIcon size={20} className="text-blue-500" />
           </div>
           <div className="flex-grow">
             <div className="flex justify-between items-start">
-              <h4 className="font-medium text-sm">{item.title}</h4>
+              <h4 className="font-medium text-sm text-gray-900 dark:text-white">{item.title}</h4>
               <div className={`ml-2 h-2 w-2 rounded-full ${item.impact === 'positive' ? 'bg-green-500' : 'bg-red-500'}`}></div>
             </div>
             <div className="flex items-center justify-between mt-1">
-              <span className="text-xs text-gray-400">{item.source}</span>
-              <div className="flex items-center text-xs text-gray-400">
+              <span className="text-xs text-gray-500 dark:text-gray-400">{item.source}</span>
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                 <ClockIcon size={12} className="mr-1" />
                 {item.time}
               </div>
@@ -41,7 +41,7 @@ export default function NewsWidget() {
           </div>
         </div>)}
       <div className="text-center pt-2">
-        <button className="text-xs text-blue-400 hover:text-blue-300 flex items-center mx-auto">
+        <button className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center mx-auto">
           View all news <ExternalLinkIcon size={12} className="ml-1" />
         </button>
       </div>

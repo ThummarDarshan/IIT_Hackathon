@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
 import { BarChart2Icon, EyeIcon, BellIcon, SettingsIcon, ShieldIcon, LogOutIcon, MenuIcon, XIcon, UserIcon, SunIcon, MoonIcon, GridIcon } from 'lucide-react';
@@ -13,6 +13,7 @@ export default function Navigation() {
     toggleTheme
   } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isActive = (path: string) => location.pathname === path;
   // Base navigation items
@@ -84,7 +85,7 @@ export default function Navigation() {
             <button onClick={toggleTheme} className="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 mr-2" aria-label="Toggle theme">
               {theme === 'dark' ? <SunIcon size={20} /> : <MoonIcon size={20} />}
             </button>
-            <button className="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700" aria-label="Notifications">
+            <button onClick={() => navigate('/notifications')} className="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700" aria-label="Notifications">
               <BellIcon size={20} />
             </button>
             <div className="ml-4 flex items-center">
@@ -96,7 +97,7 @@ export default function Navigation() {
                   </span>
                 </div>
               </div>
-              <button onClick={logout} className="ml-4 p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700" aria-label="Log out">
+              <button onClick={() => { logout(); navigate('/'); }} className="ml-4 p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700" aria-label="Log out">
                 <LogOutIcon size={20} />
               </button>
             </div>
@@ -119,6 +120,10 @@ export default function Navigation() {
                 <span className="mr-2">{item.icon}</span>
                 {item.name}
               </Link>)}
+            <Link to="/notifications" className="block px-3 py-2 rounded-md text-base font-medium flex items-center text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => setMobileMenuOpen(false)}>
+              <span className="mr-2"><BellIcon size={20} /></span>
+              Notifications
+            </Link>
             <button onClick={logout} className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white flex items-center">
               <span className="mr-2">
                 <LogOutIcon size={20} />

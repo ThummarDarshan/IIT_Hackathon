@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
+import { useNavigate } from 'react-router-dom';
 import { UserIcon, BarChart2Icon, EyeIcon, FileTextIcon, BellIcon, ClockIcon, BookmarkIcon, TrendingUpIcon, TrendingDownIcon, AlertTriangleIcon, LogOutIcon } from 'lucide-react';
 export default function UserProfile() {
   const {
@@ -10,6 +11,7 @@ export default function UserProfile() {
   const {
     theme
   } = useTheme();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   // Mock data
   const recentActivity = [{
@@ -115,7 +117,7 @@ export default function UserProfile() {
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 {user?.email || 'analyst@example.com'}
               </p>
-              <button onClick={logout} className="w-full py-2 rounded-md border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 dark:hover:bg-opacity-30 transition-colors flex items-center justify-center">
+              <button onClick={() => { logout(); navigate('/'); }} className="w-full py-2 rounded-md border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 dark:hover:bg-opacity-30 transition-colors flex items-center justify-center">
                 <LogOutIcon size={16} className="mr-2" />
                 Sign Out
               </button>

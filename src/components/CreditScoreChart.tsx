@@ -57,13 +57,13 @@ const CustomTooltip = ({
   label
 }: any) => {
   if (active && payload && payload.length) {
-    return <div className="bg-gray-900 p-3 border border-gray-700 rounded-md shadow-lg">
-        <p className="text-gray-300 font-medium">{label}</p>
-        <p className="text-blue-400">
+    return <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg">
+        <p className="text-gray-700 dark:text-gray-300 font-medium">{label}</p>
+        <p className="text-blue-600 dark:text-blue-400">
           <span className="font-medium">Our Score: </span>
           {payload[0].value}
         </p>
-        <p className="text-green-400">
+        <p className="text-green-600 dark:text-green-400">
           <span className="font-medium">Agency Rating: </span>
           {payload[1].value}
         </p>
@@ -80,16 +80,16 @@ export default function CreditScoreChart() {
         left: 20,
         bottom: 5
       }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
           <XAxis dataKey="date" tick={{
-          fill: '#9CA3AF'
+          fill: '#4B5563'
         }} axisLine={{
-          stroke: '#4B5563'
+          stroke: '#D1D5DB'
         }} />
           <YAxis domain={[50, 100]} tick={{
-          fill: '#9CA3AF'
+          fill: '#4B5563'
         }} axisLine={{
-          stroke: '#4B5563'
+          stroke: '#D1D5DB'
         }} />
           <Tooltip content={<CustomTooltip />} />
           <ReferenceLine y={70} stroke="#F59E0B" strokeDasharray="3 3" />

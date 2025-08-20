@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { BarChart2Icon, TrendingUpIcon, SearchIcon, LineChartIcon, ArrowRightIcon } from 'lucide-react';
+import { BarChart2Icon, TrendingUpIcon, SearchIcon, LineChartIcon, ArrowRightIcon, SunIcon, MoonIcon } from 'lucide-react';
 import * as THREE from 'three';
 import LoginModal from '../components/LoginModal';
+import { useTheme } from '../context/ThemeContext';
 export default function LandingPage() {
   const navigate = useNavigate();
   const {
     isAuthenticated,
     login
   } = useUser();
+  const { theme, toggleTheme } = useTheme();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginAs, setLoginAs] = useState<'analyst' | 'admin'>('analyst');
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -91,7 +93,7 @@ export default function LandingPage() {
     setLoginAs(role);
     setShowLoginModal(true);
   };
-  return <div className="relative min-h-screen overflow-hidden bg-gray-900">
+  return <div className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
       {/* Three.js Canvas Background */}
       <canvas ref={canvasRef} className="absolute inset-0 -z-10" />
       {/* Header */}
@@ -101,13 +103,16 @@ export default function LandingPage() {
             <div className="h-10 w-10 bg-blue-500 rounded-md flex items-center justify-center mr-2">
               <BarChart2Icon size={24} className="text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">CreditAI</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">CreditAI</span>
           </div>
-          <div className="space-x-4">
-            <button onClick={() => openLoginModal('analyst')} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-transparent border border-blue-500 hover:bg-blue-500 hover:bg-opacity-20 transition-all">
+          <div className="space-x-4 flex items-center">
+            <button onClick={toggleTheme} className="p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700" aria-label="Toggle theme">
+              {theme === 'dark' ? <SunIcon size={20} /> : <MoonIcon size={20} />}
+            </button>
+            <button onClick={() => openLoginModal('analyst')} className="px-4 py-2 rounded-md text-sm font-medium border border-blue-500 text-blue-600 hover:bg-blue-50 transition-all dark:text-white dark:border-blue-400 dark:hover:bg-gray-700">
               Login
             </button>
-            <button onClick={() => openLoginModal('analyst')} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition-all">
+            <button onClick={() => navigate('/signup')} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all">
               Sign Up
             </button>
           </div>
@@ -117,11 +122,11 @@ export default function LandingPage() {
       <main className="relative z-10 px-4 sm:px-6 lg:px-8 pt-10 pb-24">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Real-Time Explainable{' '}
               <span className="text-blue-500">Credit Intelligence</span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8">
               Advanced AI-powered credit analytics platform that provides
               real-time credit scoring with transparent explanations.
             </p>
@@ -136,50 +141,50 @@ export default function LandingPage() {
           </div>
           {/* Feature Cards */}
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500 transition-all">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-all">
               <div className="h-12 w-12 bg-blue-500 bg-opacity-20 rounded-md flex items-center justify-center mb-4">
                 <TrendingUpIcon size={28} className="text-blue-500" />
               </div>
               <h3 className="text-xl font-bold mb-2">Real-time Scores</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 Monitor creditworthiness in real-time with AI-powered analytics
                 that update as new information becomes available.
               </p>
             </div>
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500 transition-all">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-all">
               <div className="h-12 w-12 bg-blue-500 bg-opacity-20 rounded-md flex items-center justify-center mb-4">
                 <SearchIcon size={28} className="text-blue-500" />
               </div>
               <h3 className="text-xl font-bold mb-2">
                 Transparent Explanations
               </h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 Understand exactly why a credit score changed with detailed
                 feature-level explanations and event tracking.
               </p>
             </div>
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-blue-500 transition-all">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-all">
               <div className="h-12 w-12 bg-blue-500 bg-opacity-20 rounded-md flex items-center justify-center mb-4">
                 <LineChartIcon size={28} className="text-blue-500" />
               </div>
               <h3 className="text-xl font-bold mb-2">Interactive Dashboard</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 Visualize trends, compare with traditional ratings, and get
                 alerts on significant changes in one unified view.
               </p>
             </div>
           </div>
           {/* Demo Section */}
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 max-w-5xl mx-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 max-w-5xl mx-auto">
             <h2 className="text-2xl font-bold mb-4 text-center">
               See it in action
             </h2>
-            <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
+            <div className="aspect-video bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center">
               <div className="text-center p-8">
                 <div className="w-24 h-24 bg-blue-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart2Icon size={48} className="text-blue-500" />
                 </div>
-                <p className="text-gray-400 mb-4">
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Interactive demo would appear here
                 </p>
                 <button onClick={() => openLoginModal('analyst')} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition-all">
@@ -191,16 +196,16 @@ export default function LandingPage() {
         </div>
       </main>
       {/* Footer */}
-      <footer className="relative z-10 bg-gray-800 py-8 border-t border-gray-700">
+      <footer className="relative z-10 bg-gray-100 dark:bg-gray-800 py-8 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
               <div className="h-8 w-8 bg-blue-500 rounded-md flex items-center justify-center mr-2">
                 <BarChart2Icon size={18} className="text-white" />
               </div>
-              <span className="text-lg font-bold text-white">CreditAI</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">CreditAI</span>
             </div>
-            <div className="text-gray-400 text-sm">
+            <div className="text-gray-600 dark:text-gray-400 text-sm">
               © 2023 CreditAI. All rights reserved.
             </div>
           </div>

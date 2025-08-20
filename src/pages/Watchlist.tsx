@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { EyeIcon, SearchIcon, FilterIcon, BellIcon, TrendingUpIcon, TrendingDownIcon, PlusIcon, XIcon } from 'lucide-react';
 import CompanyCard from '../components/CompanyCard';
 // Mock data for the watchlist
@@ -76,7 +76,25 @@ const initialAlerts = [{
 export default function Watchlist() {
   const [activeTab, setActiveTab] = useState('companies');
   const [searchQuery, setSearchQuery] = useState('');
-  const [companies, setCompanies] = useState(initialWatchlistCompanies);
+  const storageKey = 'watchlistCompanies';
+  const readWatchlist = () => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : initialWatchlistCompanies;
+    } catch {
+      return initialWatchlistCompanies;
+    }
+  };
+  const [companies, setCompanies] = useState(readWatchlist());
+  useEffect(() => {
+    const sync = () => setCompanies(readWatchlist());
+    window.addEventListener('watchlist:updated', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('watchlist:updated', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
   const [alerts, setAlerts] = useState(initialAlerts);
   const [isAddCompanyOpen, setIsAddCompanyOpen] = useState(false);
   const [newCompanyName, setNewCompanyName] = useState('');
@@ -164,10 +182,6 @@ export default function Watchlist() {
               <button className="px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white flex items-center">
                 <FilterIcon size={16} className="mr-2" />
                 Filter
-              </button>
-              <button className="px-3 py-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white flex items-center" onClick={() => setIsAddCompanyOpen(true)}>
-                <PlusIcon size={16} className="mr-2" />
-                Add Company
               </button>
             </div>
           </div>

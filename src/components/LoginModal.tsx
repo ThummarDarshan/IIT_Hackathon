@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { XIcon } from 'lucide-react';
+import { XIcon, MailIcon } from 'lucide-react';
 interface LoginModalProps {
   onClose: () => void;
   onLogin: (email: string, password: string) => Promise<void>;
@@ -22,6 +22,16 @@ export default function LoginModal({
     } catch (error) {
       console.error('Login failed:', error);
       // Would handle error feedback in a real app
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleGoogle = async () => {
+    // Demo-only: simulate Google login by using analyst account
+    setIsLoading(true);
+    try {
+      await onLogin('analyst@example.com', 'oauth-google');
+      onClose();
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +66,12 @@ export default function LoginModal({
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+          <div className="mt-3">
+            <button onClick={handleGoogle} disabled={isLoading} className="w-full px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-medium rounded-md flex items-center justify-center dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="h-5 w-5 mr-2" />
+              Continue with Google
+            </button>
+          </div>
           <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
             <p>Demo credentials:</p>
             <p className="mt-1">Analyst: analyst@example.com</p>

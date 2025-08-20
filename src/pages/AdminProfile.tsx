@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useUser } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
 import { ShieldIcon, UserIcon, KeyIcon, AlertTriangleIcon, FileTextIcon, SettingsIcon, DatabaseIcon, ServerIcon, BellIcon, CheckCircleIcon, XCircleIcon, LogOutIcon } from 'lucide-react';
@@ -11,6 +11,61 @@ export default function AdminProfile() {
     theme
   } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
+  // System Controls interactive state
+  const [apiServiceStatus, setApiServiceStatus] = useState<'operational' | 'restarting'>('operational');
+  const [lastBackupTime, setLastBackupTime] = useState<string | null>(null);
+  const [backupProgress, setBackupProgress] = useState<number>(0);
+  const [actionLogs, setActionLogs] = useState<Array<{ id: string; title: string; detail: string; time: string }>>([]);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [settings, setSettings] = useState<{ maintenanceMode: boolean; autoScaling: boolean }>({ maintenanceMode: false, autoScaling: true });
+  const [alertsModalOpen, setAlertsModalOpen] = useState(false);
+  const [modelProgress] = useState<number>(65);
+  const notificationsRef = useRef<HTMLDivElement | null>(null);
+
+  function addActionLog(title: string, detail: string) {
+    const time = new Date().toLocaleString();
+    setActionLogs(prev => [{ id: `${Date.now()}`, title, detail, time }, ...prev].slice(0, 8));
+  }
+
+  function handleRestartServices() {
+    if (apiServiceStatus === 'restarting') return;
+    setApiServiceStatus('restarting');
+    addActionLog('Restart initiated', 'API services are restarting...');
+    setTimeout(() => {
+      setApiServiceStatus('operational');
+      addActionLog('Restart complete', 'API services are back online.');
+    }, 1800);
+  }
+
+  function handleBackupDatabase() {
+    if (backupProgress > 0 && backupProgress < 100) return;
+    setBackupProgress(1);
+    addActionLog('Backup started', 'Database backup has started.');
+    const interval = setInterval(() => {
+      setBackupProgress(prev => {
+        const next = Math.min(prev + Math.ceil(Math.random() * 20), 100);
+        if (next >= 100) {
+          clearInterval(interval);
+          const finishedAt = new Date().toLocaleString();
+          setLastBackupTime(finishedAt);
+          addActionLog('Backup completed', `Database backup finished at ${finishedAt}.`);
+          setTimeout(() => setBackupProgress(0), 1200);
+        }
+        return next;
+      });
+    }, 350);
+  }
+
+  function handleOpenSettings() {
+    setSettingsModalOpen(true);
+  }
+
+  function handleViewAlerts() {
+    setAlertsModalOpen(true);
+    if (notificationsRef.current) {
+      notificationsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   if (user?.role !== 'admin') {
     return <div className="max-w-5xl mx-auto">
         <div className="bg-red-50 dark:bg-red-900 dark:bg-opacity-20 p-6 rounded-xl border border-red-200 dark:border-red-800 text-center">
@@ -485,13 +540,13 @@ export default function AdminProfile() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center mb-2">
-                      <div className="h-3 w-3 bg-green-500 rounded-full mr-2"></div>
+                      <div className={`h-3 w-3 rounded-full mr-2 ${apiServiceStatus === 'operational' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                       <h3 className="font-medium text-gray-900 dark:text-white">
                         API Services
                       </h3>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                      All services operational
+                      {apiServiceStatus === 'operational' ? 'All services operational' : 'Restarting services...'}
                     </p>
                   </div>
                   <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -502,8 +557,16 @@ export default function AdminProfile() {
                       </h3>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Connected and healthy
+                      Connected and healthy{lastBackupTime ? ` • Last backup: ${lastBackupTime}` : ''}
                     </p>
+                    {backupProgress > 0 && backupProgress < 100 && (
+                      <div className="mt-2">
+                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                          <div className="bg-green-500 h-2 rounded-full" style={{ width: `${backupProgress}%` }}></div>
+                        </div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Backup in progress: {backupProgress}%</div>
+                      </div>
+                    )}
                   </div>
                   <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center mb-2">
@@ -513,20 +576,20 @@ export default function AdminProfile() {
                       </h3>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                      In progress (65%)
+                      In progress ({modelProgress}%)
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900 dark:bg-opacity-20 rounded-lg border border-blue-100 dark:border-blue-800">
                   <div>
                     <h3 className="font-medium text-blue-800 dark:text-blue-300">
-                      System Maintenance
+                      {settings.maintenanceMode ? 'Maintenance Mode' : 'System Maintenance'}
                     </h3>
                     <p className="text-sm text-blue-700 dark:text-blue-400">
-                      Scheduled maintenance: Oct 20, 2023 at 2:00 AM UTC
+                      {settings.maintenanceMode ? 'Maintenance mode is enabled. Non-critical services may be limited.' : 'Scheduled maintenance: Oct 20, 2023 at 2:00 AM UTC'}
                     </p>
                   </div>
-                  <button className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md text-sm">
+                  <button onClick={() => setSettingsModalOpen(true)} className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md text-sm">
                     Reschedule
                   </button>
                 </div>
@@ -536,7 +599,7 @@ export default function AdminProfile() {
                   Quick Actions
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <button className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
+                  <button onClick={handleRestartServices} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
                     <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-2">
                       <ServerIcon size={24} className="text-blue-600 dark:text-blue-400" />
                     </div>
@@ -544,7 +607,7 @@ export default function AdminProfile() {
                       Restart Services
                     </span>
                   </button>
-                  <button className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
+                  <button onClick={handleBackupDatabase} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
                     <div className="h-12 w-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-2">
                       <DatabaseIcon size={24} className="text-green-600 dark:text-green-400" />
                     </div>
@@ -552,7 +615,7 @@ export default function AdminProfile() {
                       Backup Database
                     </span>
                   </button>
-                  <button className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
+                  <button onClick={handleOpenSettings} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
                     <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-2">
                       <SettingsIcon size={24} className="text-purple-600 dark:text-purple-400" />
                     </div>
@@ -560,7 +623,7 @@ export default function AdminProfile() {
                       System Settings
                     </span>
                   </button>
-                  <button className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
+                  <button onClick={handleViewAlerts} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex flex-col items-center">
                     <div className="h-12 w-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-2">
                       <AlertTriangleIcon size={24} className="text-red-600 dark:text-red-400" />
                     </div>
@@ -569,8 +632,24 @@ export default function AdminProfile() {
                     </span>
                   </button>
                 </div>
+                {actionLogs.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Recent Actions</h3>
+                    <div className="space-y-2">
+                      {actionLogs.map(log => (
+                        <div key={log.id} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <div className="flex items-center justify-between">
+                            <div className="font-medium text-gray-900 dark:text-white">{log.title}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{log.time}</div>
+                          </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-300">{log.detail}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div ref={notificationsRef} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                   System Notifications
                 </h2>
@@ -621,6 +700,74 @@ export default function AdminProfile() {
                   </div>
                 </div>
               </div>
+              {/* Settings Modal */}
+              {settingsModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setSettingsModalOpen(false)}></div>
+                  <div className="relative bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-200 dark:border-gray-700 shadow-xl">
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">System Settings</h3>
+                    <div className="space-y-4">
+                      <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div>
+                          <div className="font-medium text-gray-900 dark:text-white">Maintenance Mode</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">Temporarily limit non-critical features.</div>
+                        </div>
+                        <input type="checkbox" checked={settings.maintenanceMode} onChange={(e) => setSettings(s => ({ ...s, maintenanceMode: e.target.checked }))} />
+                      </label>
+                      <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div>
+                          <div className="font-medium text-gray-900 dark:text-white">Auto-scaling</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">Automatically scale services under load.</div>
+                        </div>
+                        <input type="checkbox" checked={settings.autoScaling} onChange={(e) => setSettings(s => ({ ...s, autoScaling: e.target.checked }))} />
+                      </label>
+                    </div>
+                    <div className="mt-6 flex justify-end space-x-2">
+                      <button onClick={() => setSettingsModalOpen(false)} className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200">
+                        Cancel
+                      </button>
+                      <button onClick={() => { setSettingsModalOpen(false); addActionLog('Settings saved', `Maintenance: ${settings.maintenanceMode ? 'On' : 'Off'}, Auto-scaling: ${settings.autoScaling ? 'On' : 'Off'}`); }} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* Alerts Modal */}
+              {alertsModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setAlertsModalOpen(false)}></div>
+                  <div className="relative bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg border border-gray-200 dark:border-gray-700 shadow-xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Alerts</h3>
+                      <button onClick={() => setAlertsModalOpen(false)} className="text-gray-600 dark:text-gray-300">✕</button>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-start p-3 bg-yellow-50 dark:bg-yellow-900 dark:bg-opacity-20 rounded-lg border border-yellow-100 dark:border-yellow-800">
+                        <div className="h-8 w-8 bg-yellow-100 dark:bg-yellow-800 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                          <AlertTriangleIcon size={16} className="text-yellow-600 dark:text-yellow-400" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-yellow-800 dark:text-yellow-300">High CPU Usage</div>
+                          <div className="text-sm text-yellow-700 dark:text-yellow-400">System is experiencing high CPU usage (78%).</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start p-3 bg-red-50 dark:bg-red-900 dark:bg-opacity-20 rounded-lg border border-red-100 dark:border-red-800">
+                        <div className="h-8 w-8 bg-red-100 dark:bg-red-800 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                          <BellIcon size={16} className="text-red-600 dark:text-red-400" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-red-800 dark:text-red-300">Security Patch Pending</div>
+                          <div className="text-sm text-red-700 dark:text-red-400">A critical security update is available (v2.5.0).</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-6 text-right">
+                      <button onClick={() => { setAlertsModalOpen(false); addActionLog('Alerts reviewed', 'Admin viewed current system alerts.'); }} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">Mark as Reviewed</button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>}
         </div>
       </div>

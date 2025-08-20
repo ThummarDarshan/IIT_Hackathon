@@ -11,6 +11,7 @@ import UserProfile from './pages/UserProfile';
 import RoleBasedDashboard from './pages/RoleBasedDashboard';
 import CompaniesOverview from './pages/CompaniesOverview';
 import Notifications from './pages/Notifications';
+import Signup from './pages/Signup';
 import Navigation from './components/Navigation';
 import { UserProvider } from './context/UserContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -22,6 +23,7 @@ export function App() {
           <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white transition-colors duration-200">
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/signup" element={<Signup />} />
               <Route path="/*" element={<AuthenticatedRoutes />} />
             </Routes>
           </div>

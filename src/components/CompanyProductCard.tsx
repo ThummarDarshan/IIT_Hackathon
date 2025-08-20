@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUpIcon, TrendingDownIcon, StarIcon, ExternalLinkIcon, MapPinIcon, CalendarIcon, UserIcon, GlobeIcon, BarChart2Icon } from 'lucide-react';
+import { TrendingUpIcon, TrendingDownIcon, StarIcon, ExternalLinkIcon, MapPinIcon, CalendarIcon, UserIcon, GlobeIcon, BarChart2Icon, EyeIcon } from 'lucide-react';
 interface Company {
   id: string;
   name: string;
@@ -24,6 +24,44 @@ interface CompanyProductCardProps {
 export default function CompanyProductCard({
   company
 }: CompanyProductCardProps) {
+  // Watchlist helpers using localStorage
+  const storageKey = 'watchlistCompanies';
+  const readWatchlist = (): Array<Partial<Company>> => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  };
+  const [isWatched, setIsWatched] = useState<boolean>(() => readWatchlist().some(c => c.id === company.id));
+  useEffect(() => {
+    setIsWatched(readWatchlist().some(c => c.id === company.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [company.id]);
+  const toggleWatchlist = () => {
+    const list = readWatchlist();
+    const exists = list.some(c => c.id === company.id);
+    let updated: Array<Partial<Company>>;
+    if (exists) {
+      updated = list.filter(c => c.id !== company.id);
+    } else {
+      const entry: Partial<Company> = {
+        id: company.id,
+        name: company.name,
+        ticker: company.ticker,
+        score: company.score,
+        change: company.change,
+        industry: company.industry,
+        logo: company.logo
+      } as Partial<Company>;
+      updated = [entry, ...list];
+    }
+    localStorage.setItem(storageKey, JSON.stringify(updated));
+    setIsWatched(!exists);
+    // Notify other pages to refresh
+    window.dispatchEvent(new Event('watchlist:updated'));
+  };
   // Determine color based on score
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-500';
@@ -49,6 +87,10 @@ export default function CompanyProductCard({
               {company.ticker.substring(0, 2)}
             </div>}
         </div>
+        {/* Watchlist toggle */}
+        <button onClick={toggleWatchlist} title={isWatched ? 'Remove from Watchlist' : 'Add to Watchlist'} className={`absolute top-3 left-3 p-2 rounded-full border ${isWatched ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white/90 dark:bg-gray-900/70 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200'} hover:opacity-90 transition` }>
+          <EyeIcon size={16} />
+        </button>
         {/* Industry badge */}
         <div className="absolute top-3 right-3">
           <span className="px-2 py-1 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-70 rounded text-xs text-gray-700 dark:text-white border border-gray-200 dark:border-transparent">

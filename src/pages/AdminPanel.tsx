@@ -68,6 +68,86 @@ const userActivity = [{
 }];
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('overview');
+  // Overview state
+  const [lastUpdate, setLastUpdate] = useState('10 minutes ago');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  // Jobs and sources state
+  const [jobs, setJobs] = useState(runningJobs);
+  const [sources, setSources] = useState(dataSources);
+  // Add source modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newSourceName, setNewSourceName] = useState('');
+  const [newSourceType, setNewSourceType] = useState<'Structured' | 'Unstructured'>('Structured');
+  // Feedback banner
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  const notify = (msg: string) => {
+    setActionNotice(msg);
+    window.setTimeout(() => setActionNotice(null), 2000);
+  };
+
+  function handleRefreshData() {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+      setLastUpdate('Just now');
+      notify('Data refreshed successfully');
+    }, 1200);
+  }
+
+  function handleAddSource() {
+    setShowAddModal(true);
+  }
+
+  function handleSaveNewSource() {
+    const name = newSourceName.trim();
+    if (!name) {
+      notify('Please enter a source name');
+      return;
+    }
+    const newSource = {
+      id: Date.now().toString(),
+      name,
+      type: newSourceType,
+      status: 'healthy',
+      lastUpdate: 'Just now'
+    };
+    setSources(prev => [newSource, ...prev]);
+    setShowAddModal(false);
+    setNewSourceName('');
+    setNewSourceType('Structured');
+    notify('New data source added');
+  }
+
+  function handleRetrainModel() {
+    setJobs(prev => prev.map(job => job.id === '2' ? { ...job, status: 'running', progress: 0, startTime: 'Now' } : job));
+    notify('Model retraining started');
+    const interval = setInterval(() => {
+      setJobs(prev => prev.map(job => {
+        if (job.id === '2' && job.status === 'running') {
+          const nextProgress = Math.min(job.progress + Math.ceil(Math.random() * 20), 100);
+          if (nextProgress >= 100) {
+            clearInterval(interval);
+            return { ...job, status: 'pending', progress: 0, startTime: 'Just completed' };
+          }
+          return { ...job, progress: nextProgress };
+        }
+        return job;
+      }));
+    }, 400);
+  }
+
+  function handleOpenSettings() {
+    setShowSettingsModal(true);
+  }
+
+  function handlePerSourceRefresh(sourceId: string) {
+    setSources(prev => prev.map(s => s.id === sourceId ? { ...s, lastUpdate: 'Just now' } : s));
+    notify('Source refreshed');
+  }
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'healthy':
@@ -117,10 +197,10 @@ export default function AdminPanel() {
                   </div>
                   <div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">System Status</div>
-                    <div className="font-medium">Operational</div>
+                    <div className="font-medium">{maintenanceMode ? 'Maintenance' : 'Operational'}</div>
                   </div>
                 </div>
-                <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                <div className={`h-3 w-3 rounded-full ${maintenanceMode ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
@@ -131,11 +211,11 @@ export default function AdminPanel() {
                   </div>
                   <div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Last Update</div>
-                    <div className="font-medium">10 minutes ago</div>
+                    <div className="font-medium">{lastUpdate}</div>
                   </div>
                 </div>
-                <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
-                  Refresh
+                <button onClick={handleRefreshData} className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
+                  {isRefreshing ? 'Refreshing…' : 'Refresh'}
                 </button>
               </div>
             </div>
@@ -165,7 +245,7 @@ export default function AdminPanel() {
               </button>
             </div>
             <div className="space-y-4">
-              {runningJobs.map(job => <div key={job.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              {jobs.map(job => <div key={job.id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="font-medium">{job.name}</h3>
                     <span className={`px-2 py-1 text-xs rounded-full ${job.status === 'running' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-600'}`}>
@@ -192,23 +272,28 @@ export default function AdminPanel() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
               <div className="grid grid-cols-2 gap-3">
-                <button className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
+                <button onClick={handleRefreshData} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
                   <RefreshCwIcon size={24} className="text-blue-500 mb-2" />
                   <span className="text-sm">Refresh Data</span>
                 </button>
-                <button className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
+                <button onClick={handleAddSource} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
                   <DatabaseIcon size={24} className="text-green-500 mb-2" />
                   <span className="text-sm">Add Source</span>
                 </button>
-                <button className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
+                <button onClick={handleRetrainModel} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
                   <ServerIcon size={24} className="text-yellow-500 mb-2" />
                   <span className="text-sm">Retrain Model</span>
                 </button>
-                <button className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
+                <button onClick={handleOpenSettings} className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex flex-col items-center justify-center">
                   <SettingsIcon size={24} className="text-purple-500 mb-2" />
                   <span className="text-sm">Settings</span>
                 </button>
               </div>
+              {actionNotice && (
+                <div className="mt-4 text-sm text-blue-700 bg-blue-50 dark:bg-blue-900 dark:bg-opacity-20 dark:text-blue-300 p-2 rounded-md border border-blue-100 dark:border-blue-800">
+                  {actionNotice}
+                </div>
+              )}
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">
@@ -236,11 +321,11 @@ export default function AdminPanel() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <h2 className="text-xl font-semibold">Data Sources</h2>
             <div className="flex space-x-3">
-              <button className="px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white flex items-center">
+              <button onClick={() => { setLastUpdate('Just now'); notify('All sources refreshed'); }} className="px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white flex items-center">
                 <RefreshCwIcon size={16} className="mr-2" />
                 Refresh All
               </button>
-              <button className="px-3 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white flex items-center">
+              <button onClick={() => setShowAddModal(true)} className="px-3 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white flex items-center">
                 <PlusIcon size={16} className="mr-2" />
                 Add Source
               </button>
@@ -269,7 +354,7 @@ export default function AdminPanel() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {dataSources.map(source => <tr key={source.id}>
+                {sources.map(source => <tr key={source.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium">{source.name}</div>
                     </td>
@@ -288,7 +373,7 @@ export default function AdminPanel() {
                       {source.lastUpdate}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mr-4">
+                      <button onClick={() => handlePerSourceRefresh(source.id)} className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mr-4">
                         Refresh
                       </button>
                       <button className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
@@ -398,5 +483,51 @@ export default function AdminPanel() {
             </div>
           </div>
         </>}
+      {/* Settings modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setShowSettingsModal(false)}></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-200 dark:border-gray-700 shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">Panel Settings</h3>
+            <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div>
+                <div className="font-medium">Maintenance Mode</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Limit non-critical features</div>
+              </div>
+              <input type="checkbox" checked={maintenanceMode} onChange={(e) => setMaintenanceMode(e.target.checked)} />
+            </label>
+            <div className="mt-6 flex justify-end space-x-2">
+              <button onClick={() => setShowSettingsModal(false)} className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600">Cancel</button>
+              <button onClick={() => { setShowSettingsModal(false); notify('Settings updated'); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Add source modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setShowAddModal(false)}></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-200 dark:border-gray-700 shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">Add Data Source</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm mb-1">Name</label>
+                <input value={newSourceName} onChange={(e) => setNewSourceName(e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md" />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Type</label>
+                <select value={newSourceType} onChange={(e) => setNewSourceType(e.target.value as 'Structured' | 'Unstructured')} className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md">
+                  <option value="Structured">Structured</option>
+                  <option value="Unstructured">Unstructured</option>
+                </select>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end space-x-2">
+              <button onClick={() => setShowAddModal(false)} className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600">Cancel</button>
+              <button onClick={handleSaveNewSource} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">Add</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 }

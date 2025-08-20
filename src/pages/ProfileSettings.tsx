@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
 import { UserIcon, BellIcon, MoonIcon, SunIcon, SaveIcon, LogOutIcon, CheckIcon } from 'lucide-react';
 export default function ProfileSettings() {
   const {
     user,
-    logout
+    logout,
+    setUser
   } = useUser();
   const {
     theme,
@@ -37,6 +38,26 @@ export default function ProfileSettings() {
     // In a real app, this would save to the backend
     alert('Settings saved successfully');
   };
+  // Change photo handlers
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const handleChangePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+  const handlePhotoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string' && user) {
+        setUser({ ...user, avatar: reader.result });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
   return <div className="max-w-5xl mx-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -60,7 +81,8 @@ export default function ProfileSettings() {
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 {user?.role || 'Analyst'}
               </p>
-              <button className="w-full py-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mb-2">
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelected} />
+              <button onClick={handleChangePhotoClick} className="w-full py-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mb-2">
                 Change Photo
               </button>
               <button onClick={logout} className="w-full py-2 rounded-md border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 dark:hover:bg-opacity-30 transition-colors flex items-center justify-center">

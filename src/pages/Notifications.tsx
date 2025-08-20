@@ -10,7 +10,7 @@ interface NotificationItem {
   severity?: 'info' | 'warning' | 'critical';
 }
 
-const mockNotifications: NotificationItem[] = [
+const initialNotifications: (NotificationItem & { read?: boolean })[] = [
   {
     id: '1',
     type: 'score',
@@ -47,8 +47,11 @@ const mockNotifications: NotificationItem[] = [
 
 export default function Notifications() {
   const [filter, setFilter] = useState<'all' | 'score' | 'news' | 'system' | 'alert'>('all');
+  const [items, setItems] = useState(initialNotifications.map(n => ({ ...n, read: false })));
+  const markAllRead = () => setItems(prev => prev.map(n => ({ ...n, read: true })));
+  const clearAll = () => setItems([]);
 
-  const filtered = mockNotifications.filter(n => filter === 'all' ? true : n.type === filter);
+  const filtered = items.filter(n => filter === 'all' ? true : n.type === filter);
 
   const typeBadge = (type: NotificationItem['type']) => {
     const map: Record<NotificationItem['type'], string> = {
@@ -88,12 +91,17 @@ export default function Notifications() {
               {t === 'all' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
             </button>
           ))}
+          <div className="ml-auto flex items-center space-x-2">
+            <button onClick={markAllRead} className="px-3 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">Mark all as read</button>
+            <button onClick={clearAll} className="px-3 py-1 text-sm rounded-md bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900">Clear</button>
+          </div>
         </div>
       </div>
 
       <div className="space-y-3">
         {filtered.map(n => (
-          <div key={n.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+          <div key={n.id} className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 ${!n.read ? 'ring-1 ring-blue-500 ring-opacity-20' : ''}`}
+               onClick={() => setItems(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x))}>
             <div className="flex items-start justify-between">
               <div className="flex items-start">
                 <div className="h-9 w-9 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3">
@@ -113,7 +121,8 @@ export default function Notifications() {
                   </div>
                 </div>
               </div>
-              <div>
+              <div className="flex items-center space-x-2">
+                {!n.read && <span className="h-2 w-2 rounded-full bg-blue-500" />}
                 {severityIcon(n.severity)}
               </div>
             </div>

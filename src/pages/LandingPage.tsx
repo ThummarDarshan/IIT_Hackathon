@@ -4,6 +4,7 @@ import { useUser } from '../context/UserContext';
 import { BarChart2Icon, TrendingUpIcon, SearchIcon, LineChartIcon, ArrowRightIcon, SunIcon, MoonIcon } from 'lucide-react';
 import * as THREE from 'three';
 import LoginModal from '../components/LoginModal';
+import SignupModal from '../components/SignupModal';
 import { useTheme } from '../context/ThemeContext';
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function LandingPage() {
   } = useUser();
   const { theme, toggleTheme } = useTheme();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
   const [loginAs, setLoginAs] = useState<'analyst' | 'admin'>('analyst');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // Redirect if already authenticated
@@ -89,8 +91,28 @@ export default function LandingPage() {
       // Would handle error feedback to user in a real app
     }
   };
+  const handleSignup = async (name: string, email: string, password: string) => {
+    try {
+      // Demo: auto-login as analyst after signup
+      await login('analyst@example.com', 'signup');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Signup failed:', error);
+    }
+  };
   const openLoginModal = (role: 'analyst' | 'admin') => {
     setLoginAs(role);
+    setShowLoginModal(true);
+  };
+  const openSignupModal = () => {
+    setShowSignupModal(true);
+  };
+  const switchToSignup = () => {
+    setShowLoginModal(false);
+    setShowSignupModal(true);
+  };
+  const switchToLogin = () => {
+    setShowSignupModal(false);
     setShowLoginModal(true);
   };
   return <div className="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
@@ -112,7 +134,7 @@ export default function LandingPage() {
             <button onClick={() => openLoginModal('analyst')} className="px-4 py-2 rounded-md text-sm font-medium border border-blue-500 text-blue-600 hover:bg-blue-50 transition-all dark:text-white dark:border-blue-400 dark:hover:bg-gray-700">
               Login
             </button>
-            <button onClick={() => navigate('/signup')} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all">
+            <button onClick={openSignupModal} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all">
               Sign Up
             </button>
           </div>
@@ -211,7 +233,8 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-      {/* Login Modal */}
-      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLogin={handleLogin} defaultEmail={loginAs === 'analyst' ? 'analyst@example.com' : 'admin@example.com'} />}
+      {/* Auth Modals */}
+      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLogin={handleLogin} defaultEmail={loginAs === 'analyst' ? 'analyst@example.com' : 'admin@example.com'} onSwitchToSignup={switchToSignup} />}
+      {showSignupModal && <SignupModal onClose={() => setShowSignupModal(false)} onSignup={handleSignup} onSwitchToLogin={switchToLogin} />}
     </div>;
 }
